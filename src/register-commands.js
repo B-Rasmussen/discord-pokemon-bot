@@ -1,10 +1,18 @@
-const { Routes, REST } = require("discord.js");
+const { Routes, REST, ApplicationCommandOptionType } = require("discord.js");
 require("dotenv").config();
 
 const commands = [
     {
         name: "stats",
         description: "Shows details about chosen pokemon",
+        options: [
+            {
+                name: 'pokemon',
+                description: 'The selected pokemon',
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            }
+        ],
     },
     {
         name: "type_details",
