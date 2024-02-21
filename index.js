@@ -4,7 +4,7 @@ const Discord = require("discord.js");
 const fetch = require("node-fetch");
 // ==============
 //  TODO:
-//      - GET ALL STRENGTHS AND WEAKNESSES
+
 //      - MOVE POKEMON URL STUFF TO SEPARATE FILE
 //      - CLEAN UP AND ORGANIZE INTO INDEPENDENT FILES
 // ==============
@@ -31,38 +31,44 @@ function getPokemonStrengths(typing) {
             return res.json();
         })
         .then((data) => {
-            // console.log("pokemon stregth/weaknees: ", data.damage_relations);
-            const typingStrengths = JSON.stringify(
-                data.damage_relations.double_damage_to[0].name
-            ).replace(/\"/g, "");
-            const typingHalfDmgTo = JSON.stringify(
-                data.damage_relations.half_damage_to[0].name
-            ).replace(/\"/g, "");
-            const typingWeaknesses = JSON.stringify(
-                data.damage_relations.double_damage_from[0].name
-            ).replace(/\"/g, "");
-            const typingHalfDmgFrom = JSON.stringify(
-                data.damage_relations.half_damage_from[0].name
-            ).replace(/\"/g, "");
-            
-            console.log('double damage to: ', typingStrengths);
-            console.log('double damage from: ', typingWeaknesses);
-            console.log('half damage from: ', typingHalfDmgFrom);
-            console.log('half damage to: ', typingHalfDmgTo);
+            const damageData = data.damage_relations;
+
+            function typingInfo(dataSource) {
+                console.log("data source: ", dataSource);
+                if (dataSource?.length) {
+                    var dataInput = dataSource;
+                    var typingArray = [];
+                    for (var i = 0; i < dataInput.length; i++) {
+                        console.log("for: ", dataInput[i].name);
+                        const typing = JSON.stringify(
+                            dataInput[i].name
+                        ).replace(/\"/g, "");
+                        typingArray.push(typing);
+                    }
+                    console.log("returning: ", typingArray);
+                    return typingArray.join(",\n- ");
+                } else {
+                    return "nothing :sob:";
+                }
+            }
 
             return (
                 "\n" +
-                "Deals double damage to: " +
-                typingStrengths +
                 "\n" +
-                "Takes double damage from: " +
-                typingWeaknesses +
+                "Deals double damage to: \n- " +
+                typingInfo(damageData.double_damage_to) +
                 "\n" +
-                "Takes half damage to: " +
-                typingHalfDmgFrom +
                 "\n" +
-                "Deals half damage to: " +
-                typingHalfDmgTo
+                "Takes double damage from: \n- " +
+                typingInfo(damageData.double_damage_from) +
+                "\n" +
+                "\n" +
+                "Deals half damage to: \n- " +
+                typingInfo(damageData.half_damage_to) +
+                "\n" +
+                "\n" +
+                "Takes half damage from: \n- " +
+                typingInfo(damageData.half_damage_from)
             );
         });
 }
@@ -168,7 +174,7 @@ client.on("messageCreate", (msg) => {
     // const pokemon = msg.content.split(" ");
     if (msg.author.bot) return;
     if (msg.content.includes("pokemon")) {
-        getPokemonInfo("charmander").then((pokemonInfo) =>
+        getPokemonInfo("ditto").then((pokemonInfo) =>
             msg.channel.send(pokemonInfo)
         );
     }
