@@ -17,6 +17,14 @@ const commands = [
     {
         name: "type_details",
         description: "Shows details about chosen typing",
+        options: [
+            {
+                name: 'type',
+                description: 'The selected typing',
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            }
+        ],
     },
 ];
 
